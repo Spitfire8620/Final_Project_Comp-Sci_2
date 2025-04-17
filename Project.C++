@@ -32,7 +32,7 @@ public:
     vector<double> reorder_times(vector<double> times_per_task, vector<int> priorities);
     vector<int> reorder_priorities(vector<int> priorities);
     void print_schedule(vector<string> tasks, vector<int> priorities, vector<double> times_per_task, vector<double> time_T);
-    vector<double> get_time_T(vector<double> time_T);
+    vector<double> get_time_T(vector<double> time_T, vector<pair<double, int> > blocked_pairs);
     vector<pair<double, int> > get_blocked_times(vector<pair<double, int> > blocked_pairs);
 };
 
@@ -90,9 +90,19 @@ vector<int> Scheduler::reorder_priorities(vector<int> priorities) {
 }
 
 // Dummy function to return time (for expansion later)
-vector<double> Scheduler::get_time_T(vector<double> time_T) {
-    vector<double> time_Tr = time_T;
-    return time_Tr;
+vector<double> Scheduler::get_time_T(vector<double> time_T, vector<pair<double, int> > blocked_pairs) {
+    for (size_t i = 0; i < time_T.size(); i++) {
+        for (size_t j = 0; j < blocked_pairs.size(); j++) {
+            if (blocked_pairs[j].second == i + 1) {
+                time_T[i] -= blocked_pairs[j].first;
+            }
+        }
+    }
+    cout << "\nAvailable time:\n";
+    for (size_t i = 0; i < time_T.size(); i++) {
+        cout << "Day " << i + 1 << ": " << time_T[i] << " hours\n" << endl;
+    }
+    return time_T;
 }
 
 // Dummy function to return blocked times (for expansion later)
@@ -105,7 +115,7 @@ vector<pair<double, int> > Scheduler::get_blocked_times(vector<pair<double, int>
         cin >> day;
         if (day == 0) break;
         double time;
-        cout << "Enter the time blocked on day " << day << ": ";
+        cout << "Enter the time blocked on day: (in hours ex. 1.5h)" << day << ": ";
         cin >> time;
         blocked_pairs_updated.push_back(make_pair(time, day));
     }
@@ -132,6 +142,9 @@ void Scheduler::print_schedule(vector<string> tasks, vector<int> priorities, vec
     for (size_t i = 0; i < blocked_pairs.size(); i++) {
         cout << "Day " << blocked_pairs[i].second << ": " << blocked_pairs[i].first << " hours" << endl;
     }
+    vector<double> time_TEdited = get_time_T(time_T, blocked_pairs);
+    
+
 }
 
 int main() {
@@ -140,7 +153,7 @@ int main() {
     vector<string> tasks;
     vector<int> priorities;
     vector<double> times_per_task;
-    vector<double> time_T;
+    vector<double> time_T(7, 24.0);
     vector<string> blocked_times_Names;
     vector<double> blocked_times;
     cout << "\033[2J\033[1;1H"; // Clear screen
