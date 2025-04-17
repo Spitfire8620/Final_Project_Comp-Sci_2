@@ -2,8 +2,8 @@
 // Scheduler.cpp
 // Ben Sprankle
 // Chaffey College
-// Version 1.0
-// Date: 2025-04-05
+// Version 2.17
+// Date: 2025-04-16
 // This project is a simple scheduler program that allows users to input tasks,
 // categorize them by importance, and view them in order.
 
@@ -24,15 +24,16 @@ private:
     vector<int> priorities;
     vector<double> times_per_task;
     vector<double> time_T;
-    vector<string> blocked_times_Names;
-    vector<double> blocked_times;
+    vector<pair<double, int> > blocked_pairs;
 
 public:
     Scheduler(); // Constructor
-    vector<string> reorder(vector<string> tasks, vector<int> priorities);
-    void print_schedule(vector<string> tasks, vector<int> priorities, vector<double> times_per_task, vector<double> time_T, vector<string> blocked_times_Names, vector<double> blocked_times);
+    vector<string> reorder_tasks(vector<string> tasks, vector<int> priorities);
+    vector<double> reorder_times(vector<double> times_per_task, vector<int> priorities);
+    vector<int> reorder_priorities(vector<int> priorities);
+    void print_schedule(vector<string> tasks, vector<int> priorities, vector<double> times_per_task, vector<double> time_T);
     vector<double> get_time_T(vector<double> time_T);
-    vector<string> get_blocked_times(vector<string> blocked_times_Names, vector<double> blocked_times);
+    vector<pair<double, int> > get_blocked_times(vector<pair<double, int> > blocked_pairs);
 };
 
 // Constructor Definition
@@ -41,51 +42,95 @@ Scheduler::Scheduler() {
     priorities.clear();
     times_per_task.clear();
     time_T.clear();
-    blocked_times_Names.clear();
-    blocked_times.clear();
+    blocked_pairs.clear();
 }
 
 // Reorders tasks by priority (1 = most important)
-vector<string> Scheduler::reorder(vector<string> tasks, vector<int> priorities) {
-    vector<pair<int, string> > paired;
-
-    for (size_t i = 0; i < tasks.size(); i++) {
-        paired.push_back(make_pair(priorities[i], tasks[i]));
+vector<string> Scheduler::reorder_tasks(vector<string> tasks, vector<int> priorities) {
+    vector<string> reordered_tasks = tasks;
+    for (size_t i = 0; i < priorities.size(); i++) {
+        for (size_t j = 0; j < priorities.size() - i - 1; j++) {
+            if (priorities[j] > priorities[j + 1]) {
+                // Swap priorities
+                swap(priorities[j], priorities[j + 1]);
+                // Swap corresponding tasks
+                swap(reordered_tasks[j], reordered_tasks[j + 1]);
+            }
+        }
     }
-
-    sort(paired.begin(), paired.end()); // Sort by priority (ascending)
-
-    vector<string> reordered_tasks;
-    for (const auto& p : paired) {
-        reordered_tasks.push_back(p.second);
-    }
-
     return reordered_tasks;
+}
+vector<double> Scheduler::reorder_times(vector<double> times_per_task, vector<int> priorities) {
+    vector<double> reordered_times = times_per_task;
+    for (size_t i = 0; i < priorities.size(); i++) {
+        for (size_t j = 0; j < priorities.size() - i - 1; j++) {
+            if (priorities[j] > priorities[j + 1]) {
+                // Swap priorities
+                swap(priorities[j], priorities[j + 1]);
+                // Swap corresponding times
+                swap(reordered_times[j], reordered_times[j + 1]);
+            }
+        }
+    }
+    return reordered_times;
+}
+vector<int> Scheduler::reorder_priorities(vector<int> priorities) {
+    vector<int> reordered_priorities = priorities;
+    for (size_t i = 0; i < priorities.size(); i++) {
+        for (size_t j = 0; j < priorities.size() - i - 1; j++) {
+            if (priorities[j] > priorities[j + 1]) {
+                // Swap priorities
+                swap(priorities[j], priorities[j + 1]);
+                // Swap corresponding tasks
+                swap(reordered_priorities[j], reordered_priorities[j + 1]);
+            }
+        }
+    }
+    return reordered_priorities;
 }
 
 // Dummy function to return time (for expansion later)
 vector<double> Scheduler::get_time_T(vector<double> time_T) {
-    return time_T;
+    vector<double> time_Tr = time_T;
+    return time_Tr;
 }
 
 // Dummy function to return blocked times (for expansion later)
-vector<string> Scheduler::get_blocked_times(vector<string> blocked_times_Names, vector<double> blocked_times) {
-    return blocked_times_Names;
-}
-
-// Prints the schedule
-void Scheduler::print_schedule(vector<string> tasks, vector<int> priorities, vector<double> times_per_task, vector<double> time_T, vector<string> blocked_times_Names, vector<double> blocked_times) {
-    vector<pair<int, string> > schedule;
-    for (size_t i = 0; i < tasks.size(); ++i) {
-        schedule.push_back(std::make_pair(priorities[i], tasks[i]));
+vector<pair<double, int> > Scheduler::get_blocked_times(vector<pair<double, int> > blocked_pairs) {
+    vector<pair<double, int> > blocked_pairs_updated = blocked_pairs;
+    cout << "Please enter any days you have time blocked off use numbers: (ex 1 for monday)\n";
+    int day;
+    while (true) {
+        cout << "Enter the day (0 to finish): ";
+        cin >> day;
+        if (day == 0) break;
+        double time;
+        cout << "Enter the time blocked on day " << day << ": ";
+        cin >> time;
+        blocked_pairs_updated.push_back(make_pair(time, day));
     }
 
-    sort(schedule.begin(), schedule.end());
+     
+
+
+    return blocked_pairs_updated;
+}
+// Prints the schedule
+void Scheduler::print_schedule(vector<string> tasks, vector<int> priorities, vector<double> times_per_task, vector<double> time_T) {
+    vector<int> reordered_p = reorder_priorities(priorities);
+    vector<string> reordered_t = reorder_tasks(tasks, priorities);
+    vector<double> reordered_ti = reorder_times(times_per_task, priorities);
+    vector<pair<double, int> > blocked_pairs;
+    blocked_pairs = get_blocked_times(blocked_pairs);
     
 
-    cout << "Task Schedule (Ordered by Priority):\n";
-    for (const auto& item : schedule) {
-        cout << "Priority " << item.first << ": " << item.second << endl;
+    cout << "Schedual" << endl;
+    for (int i = 0; i < tasks.size(); i++) {
+        cout << "Task: " << reordered_t[i] << " | Priority: " << reordered_p[i] << " | Time: " << reordered_ti[i] << " hours" << endl;
+    }
+    cout << "\nBlocked times:\n";
+    for (size_t i = 0; i < blocked_pairs.size(); i++) {
+        cout << "Day " << blocked_pairs[i].second << ": " << blocked_pairs[i].first << " hours" << endl;
     }
 }
 
@@ -131,7 +176,7 @@ int main() {
     }
 
     cout << "\nHere is your schedule:\n\n";
-    myScheduler.print_schedule(tasks, priorities, times_per_task, time_T, blocked_times_Names, blocked_times);
+    myScheduler.print_schedule(tasks, priorities, times_per_task, time_T);
 
     return 0;
 }
