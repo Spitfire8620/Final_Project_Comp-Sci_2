@@ -1,6 +1,7 @@
 // FINAL PROJECT
 // Scheduler.cpp
-// Ben Sprankle
+// Author: Ben Sprankle
+// Testors: Ben Sprankle, Martin Aguilar, Jacob Huerta
 // Chaffey College
 // Version 5.0
 // Date: 2025-04-19
@@ -198,7 +199,7 @@ int main() {
     // This clears the console screen
     cout << "\033[2J\033[1;1H";
     cout << "Welcome to Scheduler!\n\n";
-    cout << "Please enter your tasks (type 'done' to finish):\n";
+    cout << "Please enter your task's name (type 'done' to finish):\n";
 
     string task;
     while (true) {
@@ -259,7 +260,6 @@ int main() {
         times_per_task.push_back(time);
     }
     // This sends all the data to the scheduler
-    cout << "\nHere is your schedule:\n\n";
     myScheduler->run(tasks, priorities, times_per_task, time_T);
 
     delete myScheduler;
