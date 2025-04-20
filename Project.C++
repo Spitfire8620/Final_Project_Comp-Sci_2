@@ -251,7 +251,7 @@ int main() {
             // This checks if the user entered a valid time
             cout << tasks[i] << ": ";
             cin >> time;
-            if (time <= 0 || time > 16.0) {
+            if (time <= 0 || time > 156.0) {
                 cout << "Please enter a valid time between 0 and 16 hours.\n";
                 continue;
             }
