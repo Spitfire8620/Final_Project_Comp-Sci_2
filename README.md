@@ -2,7 +2,7 @@ Scheduler Project - Final
 
 Author
 
-Ben SprankleChaffey CollegeVersion 4.8 — April 19, 2025
+Ben Sprankle Chaffey CollegeVersion 5.0 — April 19, 2025
 
 Project Summary
 
@@ -24,7 +24,7 @@ Key Features
 
 Polymorphism: The scheduler uses a base class (BaseScheduler) and a derived class (Scheduler) to demonstrate polymorphism.
 
-Input Validation: Prevents invalid input such as duplicate tasks, reused priorities, or time values over 24 hours.
+Input Validation: Prevents invalid input such as duplicate tasks, reused priorities, or time values over 16 hours. This is to make sure time is left for sleep.
 
 Task Ordering: Tasks are automatically reordered by priority using bubble sort.
 
@@ -73,4 +73,4 @@ Notes
 
 This program was designed as a final project and focuses on clarity, priority-based planning, and real-world scheduling logic.
 
-Polymorphism is lightly implemented to meet project requirements but can be extended in future versions (e.g. supporting recurring tasks or categories).
+Polymorphism is implemented to meet project requirements but can be extended in future versions (e.g., supporting recurring tasks or categories).
