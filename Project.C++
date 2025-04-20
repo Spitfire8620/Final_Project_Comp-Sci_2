@@ -35,7 +35,7 @@ private:
     vector<double> times_per_task;
     vector<double> time_T;
     vector<pair<double, int> > blocked_pairs;
-
+// This is where define our functions for our program
 public:
     Scheduler();
     vector<string> reorder_tasks(vector<string> tasks, vector<int> priorities);
