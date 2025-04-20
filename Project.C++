@@ -2,7 +2,7 @@
 // Scheduler.cpp
 // Ben Sprankle
 // Chaffey College
-// Version 4.8
+// Version 5.0
 // Date: 2025-04-19
 // This project is a simple scheduler program that lets you enter tasks,
 // give each a priority and time, and then helps you see them in order
@@ -131,8 +131,8 @@ vector<pair<double, int> > Scheduler::get_blocked_times(vector<pair<double, int>
         while (true) {
             cout << "Enter the time blocked on day " << day << " (in hours, e.g., 1.5): ";
             cin >> time;
-            if (time > 24.0 || time <= 0) {
-                cout << "Please enter a valid time between 0 and 24 hours.\n";
+            if (time > 16.0 || time <= 0) {
+                cout << "Please enter a valid time between 0 and 16 hours.\n";
             } else {
                 break;
             }
@@ -150,26 +150,30 @@ void Scheduler::print_schedule(vector<string> tasks, vector<int> priorities, vec
     vector<pair<double, int> > blocked_pairs;
     blocked_pairs = get_blocked_times(blocked_pairs);
     vector<double> time_TEdited = get_time_T(time_T, blocked_pairs);
-
+    // This is where we check if I entered my takss correctly
     cout << "\nSchedule:\n";
     for (int i = 0; i < tasks.size(); i++) {
         cout << "Task: " << reordered_t[i] << " | Priority: " << reordered_p[i] << " | Time: " << reordered_ti[i] << " hours" << endl;
     }
-
+   // This is where I check if I entered my blocked times correctly
     cout << "\nBlocked times:\n";
     for (size_t i = 0; i < blocked_pairs.size(); i++) {
         cout << "Day " << blocked_pairs[i].second << ": " << blocked_pairs[i].first << " hours" << endl;
     }
-
+    // This is the main piece of logic that creates the schedule
     cout << "\nPlanned Schedule:\n";
     for (size_t i = 0; i < reordered_t.size(); i++) {
         double time_needed = reordered_ti[i];
+        // It does it per day
         for (size_t day = 0; day < time_TEdited.size(); day++) {
+            // It makes sure I dont go over the max time available while still allowing 8 hours to sleep
             if (time_needed <= 0) break;
             if (time_TEdited[day] > 0) {
                 double hours = min(time_needed, time_TEdited[day]);
+                // It checks if I have enough time left for the task
                 time_TEdited[day] -= hours;
                 time_needed -= hours;
+                // It prints the task and how many hours I should spend on it
                 cout << "Day " << (day + 1) << ": " << reordered_t[i] << " " << hours << " hours" << endl;
             }
         }
@@ -184,14 +188,14 @@ void Scheduler::run(vector<string> tasks, vector<int> priorities, vector<double>
     print_schedule(tasks, priorities, times_per_task, time_T);
 }
 
-// === MAIN DRIVER ===
+//  MAIN DRIVER
 int main() {
     BaseScheduler* myScheduler = new Scheduler();
     vector<string> tasks;
     vector<int> priorities;
     vector<double> times_per_task;
-    vector<double> time_T(7, 24.0);
-
+    vector<double> time_T(7, 16.0);
+    // This clears the console screen
     cout << "\033[2J\033[1;1H";
     cout << "Welcome to Scheduler!\n\n";
     cout << "Please enter your tasks (type 'done' to finish):\n";
@@ -199,8 +203,9 @@ int main() {
     string task;
     while (true) {
         cin >> task;
+        // This checks if the user is done entering tasks
         if (task == "done" || task == "Done" || task == "DONE") break;
-
+        // This checks if the task is a duplicate
         bool duplicate = false;
         for (string& t : tasks) {
             if (t == task) {
@@ -214,7 +219,7 @@ int main() {
         }
         tasks.push_back(task);
     }
-
+    // This gets the users priorities for each task
     cout << "\nPlease enter the priority (1 to " << tasks.size() << ", 1 = most important) for each task:\n";
     vector<bool> used_priorities(tasks.size() + 1, false);
     for (size_t i = 0; i < tasks.size(); i++) {
@@ -222,10 +227,12 @@ int main() {
         while (true) {
             cout << tasks[i] << ": ";
             cin >> priority;
+            // This makes sure they have a valid priority
             if (priority < 1 || priority > tasks.size()) {
                 cout << "Please enter a priority between 1 and " << tasks.size() << ".\n";
                 continue;
             }
+            // This checks if the priority is already used
             if (used_priorities[priority]) {
                 cout << "This priority is already used. Choose a different one.\n";
                 continue;
@@ -235,22 +242,23 @@ int main() {
         }
         priorities.push_back(priority);
     }
-
+    // This gets the time for each task
     cout << "\nPlease enter the time (in hours, e.g., 1, 1.5, 1.25) for each task:\n";
     for (size_t i = 0; i < tasks.size(); i++) {
         double time;
         while (true) {
+            // This checks if the user entered a valid time
             cout << tasks[i] << ": ";
             cin >> time;
-            if (time <= 0 || time > 24.0) {
-                cout << "Please enter a valid time between 0 and 24 hours.\n";
+            if (time <= 0 || time > 16.0) {
+                cout << "Please enter a valid time between 0 and 16 hours.\n";
                 continue;
             }
             break;
         }
         times_per_task.push_back(time);
     }
-
+    // This sends all the data to the scheduler
     cout << "\nHere is your schedule:\n\n";
     myScheduler->run(tasks, priorities, times_per_task, time_T);
 
